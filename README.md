@@ -4,9 +4,9 @@ Turn
 
 ```php
 class Foo {
-    /** Blah|null */
+    /** @var Blah|null */
     private $blah;
-    /** \DateTime[] */
+    /** @var \DateTime[] */
     private $dates = [];
 
     // :( :( :(
@@ -26,9 +26,9 @@ into
 use \JesseSchalken\DeepClone;
 
 class Foo {
-    /** Blah|null */
+    /** @var Blah|null */
     private $blah;
-    /** \DateTime[] */
+    /** @var \DateTime[] */
     private $dates = [];
     
     // :) :) :)
