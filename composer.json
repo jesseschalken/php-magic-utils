@@ -1,0 +1,19 @@
+{
+  "name": "jesseschalken/deep-clone",
+  "description": "A trait that implements __clone() by cloning all member properties",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jesse Schalken",
+      "email": "me@jesseschalken.com"
+    }
+  ],
+  "require-dev": {
+    "phpunit/phpunit": "^4.7.7",
+    "jesseschalken/autoload-generator": "dev-master"
+  },
+  "autoload": {
+    "files": ["include.php"]
+  }
+}
