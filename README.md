@@ -3,7 +3,7 @@
 Turn
 
 ```php
-class Foo {
+class Foo extends Bar {
     /** @var Blah|null */
     private $blah;
     /** @var \DateTime[] */
@@ -11,6 +11,8 @@ class Foo {
 
     // :( :( :(
     function __clone() {
+        parent::__clone();
+
         if ($this->blah !== null)
             $this->blah = clone $this->blah;
         
@@ -25,7 +27,7 @@ into
 ```php
 use \JesseSchalken\DeepClone;
 
-class Foo {
+class Foo extends Bar {
     /** @var Blah|null */
     private $blah;
     /** @var \DateTime[] */
