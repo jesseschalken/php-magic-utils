@@ -24,6 +24,7 @@ function clone_props($object, $filter = null) {
 /**
  * Clones objects and arrays of objects (recursively).
  * @param mixed $ref
+ * @throws \Exception
  */
 function clone_ref(&$ref) {
     if (is_object($ref)) {
@@ -31,6 +32,8 @@ function clone_ref(&$ref) {
     } else if (is_array($ref)) {
         foreach ($ref as &$y)
             clone_ref($y);
+    } else if (is_resource($ref)) {
+        throw new \Exception("Resources cannot be cloned");
     }
 }
 
