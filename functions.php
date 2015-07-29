@@ -5,9 +5,12 @@ namespace JesseSchalken;
 /**
  * Clones all the properties of an object.
  * @param object $object
+ * @param string|null $filter If specified, only clone properties belonging to this class.
  */
-function clone_props($object) {
-    $class = new \ReflectionObject($object);
+function clone_props($object, $filter = null) {
+    $class = $filter === null || $filter === get_class($object)
+        ? new \ReflectionObject($object)
+        : new \ReflectionClass($filter);
     do {
         foreach ($class->getProperties() as $prop) {
             if (!$prop->isStatic() && $prop->class === $class->name) {
@@ -15,7 +18,7 @@ function clone_props($object) {
                 $prop->setValue($object, clone_val($prop->getValue($object)));
             }
         }
-    } while ($class = $class->getParentClass());
+    } while ($filter !== null && $class = $class->getParentClass());
 }
 
 /**
