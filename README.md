@@ -85,15 +85,12 @@ If you want to implement `__clone()` by cloning objects in all properties, _incl
 ```php
 use function \JesseSchalken\clone_props;
 
-class Foo extends Bar {
-    /** @var Blah|null */
-    private $blah;
-    /** @var \DateTime[] */
-    private $dates = [];
-
+class Foo {
+    // ...
     function __clone() {
         clone_props($this);
     }
+    // ...
 }
 ```
 
