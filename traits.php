@@ -1,6 +1,6 @@
 <?php
 
-namespace JesseSchalken;
+namespace MagicUtils;
 
 /**
  * Provides a default implementation of __clone() which copies all member
@@ -19,6 +19,52 @@ trait DeepClone {
             $method->invoke($this);
         }
         clone_props($this, __CLASS__);
+    }
+}
+
+trait NoConstruct {
+    function __construct() {
+    }
+}
+
+trait NoDynamicMethods {
+    function __call($name, $arguments) {
+    }
+
+    static function __callStatic($name, $arguments) {
+    }
+}
+
+trait NoDynamicProperties {
+    function __get($name) {
+    }
+
+    function __set($name, $value) {
+    }
+
+    function __isset($name) {
+    }
+
+    function __unset($name) {
+    }
+}
+
+trait NoSerialize {
+    function __sleep() {
+    }
+
+    function __wakeup() {
+    }
+}
+
+trait AutoSetState {
+    static function __set_state(array $props) {
+        $class = new \ReflectionClass(get_called_class());
+        $self  = $class->newInstanceWithoutConstructor();
+        foreach ($props as $k => $v) {
+            $self->$k = $v;
+        }
+        return $self;
     }
 }
 

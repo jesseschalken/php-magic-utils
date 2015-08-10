@@ -1,6 +1,6 @@
 <?php
 
-namespace JesseSchalken;
+namespace MagicUtils;
 
 /**
  * Clones all the properties of an object.

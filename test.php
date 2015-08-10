@@ -1,8 +1,8 @@
 <?php
 
-namespace JesseSchalken\DeepCloneTest;
+namespace MagicUtils\DeepCloneTest;
 
-use JesseSchalken\DeepClone;
+use MagicUtils\DeepClone;
 
 class A {
     use DeepClone;
