@@ -2,93 +2,18 @@
 
 **php-magic-utils** provides traits and functions to help with the implementation of [PHP's magic methods](http://php.net/manual/en/language.oop5.magic.php).
 
-<table>
-
-<tr>
-<th>Method</th>
-<th>Default</th>
-<th>Disallow</th>
-</tr>
-
-<tr>
-<td><code>__construct()</code></td>
-<td><i>nothing</i>, construction allowed</td>
-<td><code>use NoConstruct;</code></td>
-</tr>
-
-<tr>
-<td><code>__destruct()</code></td>
-<td><i>nothing</i></td>
-<td></td>
-</tr>
-
-<tr>
-<td><code>__call()</code>, <code>__callStatic()</code></td>
-<td><code>Fatal error: Call to undefined method [class]::[method]()</code></td>
-<td><code>use NoDynamicMethods;</code></td>
-</tr>
-
-<tr>
-<td>
-<code>__get()</code>,
-<code>__set()</code>,
-<code>__isset()</code>,
-<code>__unset()</code>
-</td>
-<td>Read/write dynamic public properties</td>
-<td><code>use NoDynamicProperties;</code></td>
-</tr>
-
-<tr>
-<td>
-<code>__sleep()</code>,
-<code>__wakeup()</code>
-</td>
-<td><i>nothing</i>, <code>serialize()</code>/<code>unserialize()</code> allowed</td>
-<td><code>use NoSerialize;</code></td>
-</tr>
-
-<tr>
-<td>
-<code>__toString()</code>
-</td>
-<td><code>Catchable fatal error: Object of class [class] could not be converted to string</code></td>
-<td><code>use NoToString;</code></td>
-</tr>
-
-<tr>
-<td>
-<code>__invoke()</code>
-</td>
-<td><code>Fatal error: Function name must be a string</code></td>
-<td><code>use NoInvoke;</code></td>
-</tr>
-
-<tr>
-<td>
-<code>__set_state()</code>
-</td>
-<td><code>Fatal error: Call to undefined method [class]::__set_state()</code></td>
-<td><code>use NoSetState;</code></td>
-</tr>
-
-<tr>
-<td>
-<code>__clone()</code>
-</td>
-<td><li>Shallow clone: <i>default</i></li><li>Deep clone: <code>use DeepClone;</code></li></td>
-<td><code>use NoClone;</code></td>
-</tr>
-
-<tr>
-<td>
-<code>__debugInfo()</code>
-</td>
-<td><code>var_dump()</code> prints all public properties</td>
-<td><code>use NoVarDump;</code></td>
-</tr>
-
-</table>
+Method|Default|Disallow
+------|-------|--------
+`__construct()`|_nothing_, construction allowed|`use NoConstruct;`
+`__destruct()`|_nothing_|
+`__call()`, `__callStatic()`|"Fatal error: Call to undefined method _class_::_method_()"|`use NoDynamicMethods;`
+`__get()`, `__set()`, `__isset()`, `__unset()`|Read/write undeclared public properties|`use NoDynamicProperties;`
+`__sleep()`, `__wakeup()`|_nothing_, `serialize()`/`unserialize()` allowed|`use NoSerialize;`
+`__toString()`|"Catchable fatal error: Object of class _class_ could not be converted to string"|`use NoToString;`
+`__invoke()`|"Fatal error: Function name must be a string"|`use NoInvoke;`
+`__set_state()`|"Fatal error: Call to undefined method _class_::__set_state()"|`use NoSetState;`
+`__clone()`|**shallow clone:** _default_, **deep clone:** `use DeepClone;`|`use NoClone;`
+`__debugInfo()`|`var_dump()` prints all public properties|`use NoVarDump;`
 
 ### `use NoDynamicMethods;`
 
@@ -122,11 +47,11 @@ PHP's builtin `serialize()` and `unserialize()` functions make it potentially un
 
 `use NoSerialize;` defines `__sleep()` and `__wakeup()` to throw a `SerializeNotSupported` exception so renaming a class or changing its properties is always safe (provided you update the usages).
 
-### `NoMagic`
+### `use NoMagic;`
 
 `use NoMagic;` disallows any magic which makes refactoring difficult. It is equivalent to `use NoDynamicMethods, NoDynamicProperties, NoSerialize;`.
 
-### `DeepClone`
+### `use DeepClone;`
 
 Turns
 
