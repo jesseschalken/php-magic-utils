@@ -13,8 +13,11 @@ namespace JesseSchalken;
  */
 trait DeepClone {
     function __clone() {
-        if (is_callable('parent::__clone'))
-            parent::__clone();
+        $parent = get_parent_class(__CLASS__);
+        if ($parent && method_exists($parent, '__clone')) {
+            $method = new \ReflectionMethod($parent, '__clone');
+            $method->invoke($this);
+        }
         clone_props($this, __CLASS__);
     }
 }
