@@ -4,16 +4,16 @@
 
 Method|Default|Disallow
 ------|-------|--------
-`__construct()`|_nothing_, construction allowed|`use NoConstruct;`
+`__construct()`|_nothing_, construction allowed|
 `__destruct()`|_nothing_|
 `__call()`, `__callStatic()`|"Fatal error: Call to undefined method _class_::_method_()"|`use NoDynamicMethods;`
 `__get()`, `__set()`, `__isset()`, `__unset()`|Read/write undeclared public properties|`use NoDynamicProperties;`
 `__sleep()`, `__wakeup()`|_nothing_, `serialize()`/`unserialize()` allowed|`use NoSerialize;`
-`__toString()`|"Catchable fatal error: Object of class _class_ could not be converted to string"|`use NoToString;`
-`__invoke()`|"Fatal error: Function name must be a string"|`use NoInvoke;`
-`__set_state()`|"Fatal error: Call to undefined method _class_::__set_state()"|`use NoSetState;`
-`__clone()`|**shallow clone:** _default_, **deep clone:** `use DeepClone;`|`use NoClone;`
-`__debugInfo()`|`var_dump()` prints all public properties|`use NoVarDump;`
+`__toString()`|"Catchable fatal error: Object of class _class_ could not be converted to string"|
+`__invoke()`|"Fatal error: Function name must be a string"|
+`__set_state()`|"Fatal error: Call to undefined method _class_::__set_state()"|
+`__clone()`|shallow clone (for deep clone use `use DeepClone;`)|`use NoClone;`
+`__debugInfo()`|`var_dump()` prints all public properties|
 
 ### `use NoDynamicMethods;`
 
@@ -51,9 +51,81 @@ PHP's builtin `serialize()` and `unserialize()` functions make it potentially un
 
 `use NoMagic;` disallows any magic which makes refactoring difficult. It is equivalent to `use NoDynamicMethods, NoDynamicProperties, NoSerialize;`.
 
+### `use NoClone;`
+
+To disallow an object from being cloned, use `use NoClone;`. For example, if an object contains a resource which it is supposed to have unique ownership of, `clone` would violate this by creating another object sharing the same resource. `use NoClone;` is useful is that case.
+
 ### `use DeepClone;`
 
-Turns
+PHP by default implements object cloning by doing a _shallow_ clone. That is, a new object is created with the same value for all properties, but the new object continues to reference the same copy of any objects contained in those properties. This is a poor choice for the default implementation of `clone`.
+
+Consider the following class:
+
+```php
+class A {
+    private $foo = 9;
+
+    public function getFoo() { return $this->foo; }
+    public function setFoo($foo) { $this->foo = $foo; }
+}
+```
+
+And the following function, which prints _100_:
+
+```php
+function blah() {
+    $a1 = new A;
+    $a1->setFoo(100);
+
+    $a2 = clone $a1;
+    $a2->setFoo(200);
+
+    print $a2->getFoo(); // 100
+}
+```
+
+If we were to extract a class containing the `$foo` property, and then re-implement `getFoo` and `setFoo`, like so:
+
+```php
+class A {
+    private $b;
+
+    public function __construct() {
+        $this->b = new B;
+    }
+
+    public function getFoo() { return $this->b->foo; }
+    public function setFoo($foo) { $this->b->foo = $foo; }
+}
+
+class B {
+    public $foo = 9;
+}
+```
+
+This is a breaking change. `blah()` will now print _200_ instead of _100_ because `$a1` and `$a2` will share the same instance of `B`.
+
+This could be fixed by adding an implementation of `__clone()` to `A` which does a deep clone:
+
+```php
+class A {
+    private $b;
+
+    // ...
+
+    public function __clone() {
+        $this->b = clone $this->b;
+    }
+
+    // ...
+}
+```
+
+Now `blah()` will print _100_ again. `use DeepClone;` automates this, so you don't have to remember to correctly implement `__clone()`.
+
+`use DeepClone;` implements `__clone()` by calling `parent::__clone()` if it exists, and cloning all objects contained in all properties of the class in which it's used, including objects in arbitrarily nested arrays. It will error if it finds a `reference` type, since `reference`s are pass-by-reference like objects and therefore should be cloned, but there is no general way to clone a `reference`.
+
+`use DeepClone;` turns
 
 ```php
 class Foo extends Bar {
@@ -90,8 +162,6 @@ class Foo extends Bar {
     use DeepClone;
 }
 ```
-
-The `DeepClone` trait implements `__clone()` by cloning all objects in the properties of the class in which it is used, including objects inside (arbitrarily nested) arrays. It will call `parent::__clone()` if it exists.
 
 ### `clone_ref()`, `clone_val()`
 
