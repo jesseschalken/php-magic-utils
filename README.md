@@ -4,11 +4,11 @@
 
 Method|Default|Disallow
 ------|-------|--------
-`__construct()`|_nothing_, construction allowed|
+`__construct()`|_nothing_<br>(construction allowed)|
 `__destruct()`|_nothing_|
 `__call()`,<br>`__callStatic()`|"Fatal error: Call to undefined method <br>_class_::_method_()"|`use NoDynamicMethods;`
 `__get()`,<br>`__set()`,<br>`__isset()`,<br>`__unset()`|_Write:_ Create undeclared public properties<br>_Read:_ "Undefined property: $class::$property"|`use NoDynamicProperties;`
-`__sleep()`,<br>`__wakeup()`|_nothing_, `serialize()`/`unserialize()` allowed|`use NoSerialize;`
+`__sleep()`,<br>`__wakeup()`|_nothing_<br>(`serialize()`/`unserialize()` allowed)|`use NoSerialize;`
 `__toString()`|"Catchable fatal error: Object of class<br> _class_ could not be converted to string"|
 `__invoke()`|"Fatal error: Function name must be a string"|
 `__set_state()`|"Fatal error: Call to undefined method _class_::__set_state()"|
