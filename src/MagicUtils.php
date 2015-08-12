@@ -2,6 +2,8 @@
 
 namespace MagicUtils;
 
+use LogicException;
+
 /**
  * Clones all the properties of an object.
  * @param object $object
@@ -45,5 +47,51 @@ function clone_ref(&$ref) {
 function clone_val($val) {
     clone_ref($val);
     return $val;
+}
+
+/**
+ * @param string $class
+ * @param string $method
+ * @return UndefinedMethodException
+ */
+function undefined_method($class, $method) {
+    return new UndefinedMethodException("Call to undefined method $class::$method()");
+}
+
+/**
+ * @param string $class
+ * @param string $property
+ * @return UndefinedPropertyException
+ */
+function undefined_property($class, $property) {
+    return new UndefinedPropertyException("Undefined property: $class::$property");
+}
+
+/**
+ * @param string $class
+ * @return SerializeNotSupportedException
+ */
+function no_serialize($class) {
+    return new SerializeNotSupportedException("Serialization of class $class is not supported");
+}
+
+/**
+ * @param string $class
+ * @return CloneNotSupportedException
+ */
+function no_clone($class) {
+    return new CloneNotSupportedException("Clone of class $class is not supported");
+}
+
+class UndefinedMethodException extends LogicException {
+}
+
+class UndefinedPropertyException extends LogicException {
+}
+
+class SerializeNotSupportedException extends LogicException {
+}
+
+class CloneNotSupportedException extends LogicException {
 }
 

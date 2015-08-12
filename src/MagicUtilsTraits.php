@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Traits should be in a distinct file to be autoloaded so the library is usable
+ * on PHP 5.3
+ */
+
 namespace MagicUtils;
 
 /**
@@ -18,53 +23,58 @@ trait DeepClone {
             $method = new \ReflectionMethod($parent, '__clone');
             $method->invoke($this);
         }
-        clone_props($this, __CLASS__);
-    }
-}
 
-trait NoConstruct {
-    function __construct() {
+        clone_props($this, __CLASS__);
     }
 }
 
 trait NoDynamicMethods {
     function __call($name, $arguments) {
+        throw undefined_method(__CLASS__, $name);
     }
 
     static function __callStatic($name, $arguments) {
+        throw undefined_method(__CLASS__, $name);
     }
 }
 
 trait NoDynamicProperties {
     function __get($name) {
+        throw undefined_property(__CLASS__, $name);
     }
 
     function __set($name, $value) {
+        throw undefined_property(__CLASS__, $name);
     }
 
     function __isset($name) {
+        throw undefined_property(__CLASS__, $name);
     }
 
     function __unset($name) {
+        throw undefined_property(__CLASS__, $name);
     }
 }
 
 trait NoSerialize {
     function __sleep() {
+        throw no_serialize(__CLASS__);
     }
 
     function __wakeup() {
+        throw no_serialize(__CLASS__);
     }
 }
 
-trait AutoSetState {
-    static function __set_state(array $props) {
-        $class = new \ReflectionClass(get_called_class());
-        $self  = $class->newInstanceWithoutConstructor();
-        foreach ($props as $k => $v) {
-            $self->$k = $v;
-        }
-        return $self;
+trait NoClone {
+    function __clone() {
+        throw no_clone(__CLASS__);
     }
+}
+
+trait NoMagic {
+    use NoDynamicMethods;
+    use NoDynamicProperties;
+    use NoSerialize;
 }
 
