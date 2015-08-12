@@ -21,7 +21,7 @@ Method|Default|Disallow
 
 The magic methods `__call()` and `__callStatic()` make adding new methods to a class potentially unsafe, since the new method may unintentionally override a dynamic method handled by `__call()` or `__callStatic()`.
 
-`use NoDynamicMethods;` defines `__call()` and `__callStatic()` to throw an `UndefinedMethod` exception, so adding new methods is always safe.
+`use NoDynamicMethods;` defines `__call()` and `__callStatic()` to throw an `UndefinedMethodException`, so adding new methods is always safe.
 
 ### `use NoDynamicProperties;`
 
@@ -42,13 +42,13 @@ function blah(Foo $foo) {
 
 The usage of a undeclared property `Foo::$bar` in `blah()` has made it unsafe for the author of `Foo` to add `Foo::$bar` as a new property.
 
-`use NoDynamicProperties;` defines `__get()`, `__set()`, `__isset()` and `__unset()` to throw an `UndefinedProperty` exception, so adding new properties is always safe.
+`use NoDynamicProperties;` defines `__get()`, `__set()`, `__isset()` and `__unset()` to throw an `UndefinedPropertyException`, so adding new properties is always safe.
 
 ### `use NoSerialize;`
 
 PHP's builtin `serialize()` and `unserialize()` functions make it potentially unsafe to change a class's name or properties, because a serialized version of the class may exist which needs to continue to work when unserialized.
 
-`use NoSerialize;` defines `__sleep()` and `__wakeup()` to throw a `SerializeNotSupported` exception so renaming a class or changing its properties is always safe.
+`use NoSerialize;` defines `__sleep()` and `__wakeup()` to throw a `SerializeNotSupportedException` so renaming a class or changing its properties is always safe.
 
 ### `use NoMagic;`
 
