@@ -1,8 +1,8 @@
 {
-  "name": "jesseschalken/deep-clone",
-  "description": "A trait that implements __clone() by cloning all member properties",
+  "name": "jesseschalken/magic-utils",
+  "description": "Traits and functions to help with implementing PHP's magic methods",
   "minimum-stability": "stable",
-  "license": "MIT",
+  "license": "LGPL2.1",
   "authors": [
     {
       "name": "Jesse Schalken",
