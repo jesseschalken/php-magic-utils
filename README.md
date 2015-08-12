@@ -1,13 +1,15 @@
-## php-magic-utils
+# php-magic-utils
 
 **php-magic-utils** provides traits and functions to help with the implementation of [PHP's magic methods](http://php.net/manual/en/language.oop5.magic.php).
+
+## Opting out of magic
 
 Method|Default|Disallow
 ------|-------|--------
 `__construct()`|_nothing_, construction allowed|
 `__destruct()`|_nothing_|
 `__call()`, `__callStatic()`|`Fatal error: Call to undefined method $class::$method()`|<code>use&nbsp;NoDynamicMethods;</code>
-`__get()`, `__set()`, `__isset()`, `__unset()`|_Write:_ Create undeclared public properties<br>_Read:_ `Undefined property: $class::$property`|<code>use&nbsp;NoDynamicProperties;</code>
+`__get()`, `__set()`, `__isset()`, `__unset()`|_Write:_ Create undeclared public properties (!)<br>_Read:_ `Undefined property: $class::$property`|<code>use&nbsp;NoDynamicProperties;</code>
 `__sleep()`, `__wakeup()`|_nothing_, `serialize()`/`unserialize()` allowed|<code>use&nbsp;NoSerialize;</code>
 `__toString()`|`Catchable fatal error: Object of class $class could not be converted to string`|
 `__invoke()`|`Fatal error: Function name must be a string`|
@@ -30,14 +32,15 @@ Even without these magic methods defined, a new property on a class may already 
 ```php
 class Foo {
 }
-
+```
+```php
 function blah(Foo $foo) {
     $foo->bar = 5;
     return $foo->bar;
 }
 ```
 
-The usage of a undeclared property `Foo::$bar` in `blah()` has made it unsafe to add `Foo::$bar` as a new property.
+The usage of a undeclared property `Foo::$bar` in `blah()` has made it unsafe for the author of `Foo` to add `Foo::$bar` as a new property.
 
 `use NoDynamicProperties;` defines `__get()`, `__set()`, `__isset()` and `__unset()` to throw an `UndefinedProperty` exception, so adding new properties is always safe.
 
@@ -57,70 +60,39 @@ use NoDynamicProperties;
 use NoSerialize;
 ```
 
-### `use NoClone;`
+## Cloning objects
 
-To disallow an object from being cloned, use `use NoClone;`.
+When an object is cloned with `clone ...`, PHP by default does a _shallow_ clone, meaning a new object is created with the same value for all properties, but sharing the same instance of any objects contained in those properties. This can expose the user of the class to be affected by what information is stored directly and what information is stored indirectly through other objects, breaking abstraction and causing subtle bugs.
 
-For example, if an object contains a `resource` which it is supposed to have unique ownership of, `clone` would violate this by creating another object sharing the same resource.
+### Deep clone
 
-Another example is a class which has a unique ID based on a static counter:
-
-```php
-class A {
-    private $id;
-
-    public function __construct() {
-        static $id = 1;
-        $this->id = $id++;
-    }
-
-    // ...
-}
-```
-
-Cloning an instance of `A` will result in two objects containing the same unique ID.
-
-`use NoClone;` is useful in these cases.
-
-### `use DeepClone;`
-
-PHP by default implements object cloning by doing a _shallow_ clone. That is, a new object is created with the same value for all properties, but the new object continues to reference the same copy of any objects contained in those properties. This is a poor choice for the default implementation of `clone`.
-
-Consider the following class:
+For example:
 
 ```php
 class A {
     private $foo = 9;
-
     public function getFoo() { return $this->foo; }
     public function setFoo($foo) { $this->foo = $foo; }
 }
 ```
-
-And the following function, which prints _100_:
-
 ```php
-function blah() {
+function test() {
     $a1 = new A;
     $a1->setFoo(100);
-
     $a2 = clone $a1;
     $a2->setFoo(200);
-
     print $a2->getFoo(); // 100
 }
 ```
 
-If we were to extract a class containing the `$foo` property, and then re-implement `getFoo` and `setFoo`, like so:
+If a refactoring is made to move the value of the `$foo` property into another object (`B`):
 
 ```php
 class A {
     private $b;
-
     public function __construct() {
         $this->b = new B;
     }
-
     public function getFoo() { return $this->b->foo; }
     public function setFoo($foo) { $this->b->foo = $foo; }
 }
@@ -130,27 +102,76 @@ class B {
 }
 ```
 
-This is a breaking change. `blah()` will now print _200_ instead of _100_ because `$a1` and `$a2` will share the same instance of `B`.
+The `test()` function will now print _200_ instead of _100_, because both `$a1` and `$a2` will share the same instance of `B`.
 
-This could be fixed by adding an implementation of `__clone()` to `A` which does a deep clone:
+This can be resolved by implementing `__clone()` by doing a deep clone:
 
 ```php
 class A {
     private $b;
-
     // ...
-
     public function __clone() {
         $this->b = clone $this->b;
     }
-
     // ...
 }
 ```
 
-Now `blah()` will print _100_ again. `use DeepClone;` automates this, so you don't have to remember to correctly implement `__clone()`.
+`use DeepClone;` will do this for you.
 
-`use DeepClone;` implements `__clone()` by calling `parent::__clone()` if it exists, and cloning all objects contained in all properties of the class in which it's used, including objects in arbitrarily nested arrays. It will error if it finds a `resource` type, since `resource`s are pass-by-reference like objects and therefore should be cloned, but there is no general way to clone a `resource`.
+### No clone
+
+Another example is a class which contains a unique ID based on a global counter:
+
+```php
+class A {
+    private $id;
+    public function __construct() {
+        static $id = 1;
+        $this->id = $id++;
+    }
+    public function getID() {
+        return $this->id;
+    }
+    // ...
+}
+
+function test() {
+    $a1 = new A;
+    $a2 = clone $a1;
+    echo $a1->getID(); // 1
+    echo $a2->getID(); // 1
+}
+```
+
+In this case, the `clone ...` has allowed multiple instances to share the same ID, and can be resolved by preventing instances of this class from being cloned altogether. `use NoClone;` will do this for you.
+
+### Mixed shallow/deep clone
+
+Other situations require some properties to be cloned and others to be shared, such as data structures sharing a common resource. In these cases `__clone()` must be implemented manually cloning only the properties required, using `$this->prop = clone_val($this->prop);` or `clone_ref($this->prop);`.
+
+For example:
+
+```php
+class A {
+    private $prop1;
+    private $prop2;
+    function __construct() {
+        $this->prop1 = new Foo1;
+        $this->prop2 = new Foo2;
+    }
+    function __clone() {
+        clone_ref($this->prop2);
+        // cloned instances will share the same object stored in $this->prop1
+    }
+}
+```
+
+### `use NoClone;`
+
+`use NoClone;` prevents an object from being cloned. It implements `__clone()` by throwing a `CloneNotSupportedException`.
+
+### `use DeepClone;`
 
 `use DeepClone;` turns
 
@@ -190,56 +211,20 @@ class Foo extends Bar {
 }
 ```
 
-### `clone_ref()`, `clone_val()`
+It implements `__clone()` by calling `parent::__clone()` if it exists, and cloning all objects contained in all properties of the class in which it's used, including objects in arbitrarily nested arrays. It will error if it finds a `resource` type, since `resource`s are pass-by-reference like objects and therefore should be cloned, but there is no general way to clone a `resource`.
 
-If you want to implement `__clone()` by cloning objects in some, but not all, properties, you can use `clone_ref()`:
+Note that you have to use `use DeepClone;` at each level in a class hierarhcy. It will not clone properties of parent or derived classes.
 
-```php
-use function \JesseSchalken\clone_ref;
+### `clone_ref()`, `clone_val()`, `clone_props()`
 
-class Foo {
-    // ...
-    function __clone() {
-        clone_ref($this->prop1);
-        clone_ref($this->prop2);
-        // ...
-    }
-    // ...
-}
-```
+- `clone_ref(mixed &$var):void`
 
-or `clone_val()`:
+  Will clone all objects contained in the specified variable, including those inside nested arrays. It is useful for   implementing `__clone()` by deep cloning only some properties.
 
-```php
-use function \JesseSchalken\clone_val;
+- `clone_val(mixed $val):mixed`
 
-class Foo {
-    // ...
-    function __clone() {
-        $this->prop1 = clone_val($this->prop1);
-        $this->prop2 = clone_val($this->prop2);
-        // ...
-    }
-    // ...
-}
-```
+  Will clone all objects contained in the specified value, and return the new value.
 
-`clone_val()` and `clone_ref()` are safe to call on all PHP types except `resource` and of course any object which throws an error when cloned (such as `\Closure`).
+- `clone_props(object $object, [string $class]):void`
 
-### `clone_props()`
-
-If you want to implement `__clone()` by cloning objects in all properties, _including_ properties of parent/derived classes, you can use `clone_props()`:
-
-```php
-use function \JesseSchalken\clone_props;
-
-class Foo {
-    // ...
-    function __clone() {
-        clone_props($this);
-    }
-    // ...
-}
-```
-
-I don't recommend doing this, though, since other classes in the hierarchy may not expect to have objects in their properties cloned, and may define their own `__clone()` method with intentionally different semantics.
+   Clones all the objects contained in the properties of the specified object. If `$class` is specified, it will only clone properties defined in that class, and not properties defined in other classes in the hierarchy. 
