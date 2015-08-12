@@ -6,10 +6,10 @@ Method|Default|Disallow
 ------|-------|--------
 `__construct()`|_nothing_, construction allowed|
 `__destruct()`|_nothing_|
-`__call()`, `__callStatic()`|"Fatal error: Call to undefined method _class_::_method_()"|`use NoDynamicMethods;`
-`__get()`, `__set()`, `__isset()`, `__unset()`|Read/write undeclared public properties|`use NoDynamicProperties;`
+`__call()`, `__callStatic()`|"Fatal error: Call to undefined method <br>_class_::_method_()"|`use NoDynamicMethods;`
+`__get()`, `__set()`, `__isset()`, `__unset()`|Write: create undeclared public properties<br>Read: "Undefined property: $class::$property"|`use NoDynamicProperties;`
 `__sleep()`, `__wakeup()`|_nothing_, `serialize()`/`unserialize()` allowed|`use NoSerialize;`
-`__toString()`|"Catchable fatal error: Object of class _class_ could not be converted to string"|
+`__toString()`|"Catchable fatal error: Object of class<br> _class_ could not be converted to string"|
 `__invoke()`|"Fatal error: Function name must be a string"|
 `__set_state()`|"Fatal error: Call to undefined method _class_::__set_state()"|
 `__clone()`|shallow clone (for deep clone use `use DeepClone;`)|`use NoClone;`
