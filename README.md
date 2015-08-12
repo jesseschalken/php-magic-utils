@@ -225,6 +225,6 @@ Note that you have to use `use DeepClone;` at each level in a class hierarhcy. I
 
   Will clone all objects contained in the specified value, and return the new value.
 
-- `clone_props(object $object, [string $class]):void`
+- `clone_props(object $object [, string $class]):void`
 
    Clones all the objects contained in the properties of the specified object. If `$class` is specified, it will only clone properties defined in that class, and not properties defined in other classes in the hierarchy. 
