@@ -4,15 +4,15 @@
 
 Method|Default|Disallow
 ------|-------|--------
-`__construct()`|_nothing_<br>(construction allowed)|
+`__construct()`|_nothing_, construction allowed|
 `__destruct()`|_nothing_|
-`__call()`,<br>`__callStatic()`|"Fatal error: Call to undefined method <br>_class_::_method_()"|`use NoDynamicMethods;`
-`__get()`,<br>`__set()`,<br>`__isset()`,<br>`__unset()`|_Write:_ Create undeclared public properties<br>_Read:_ "Undefined property: $class::$property"|`use NoDynamicProperties;`
-`__sleep()`,<br>`__wakeup()`|_nothing_<br>(`serialize()`/`unserialize()` allowed)|`use NoSerialize;`
+`__call()`, `__callStatic()`|"Fatal error: Call to undefined method <br>_class_::_method_()"|<code>use&nbsp;NoDynamicMethods;</code>
+`__get()`, `__set()`, `__isset()`, `__unset()`|_Write:_ Create undeclared public properties<br>_Read:_ "Undefined property: $class::$property"|<code>use&nbsp;NoDynamicProperties;</code>
+`__sleep()`, `__wakeup()`|_nothing_, `serialize()`/`unserialize()` allowed|<code>use&nbsp;NoSerialize;</code>
 `__toString()`|"Catchable fatal error: Object of class<br> _class_ could not be converted to string"|
 `__invoke()`|"Fatal error: Function name must be a string"|
 `__set_state()`|"Fatal error: Call to undefined method _class_::__set_state()"|
-`__clone()`|shallow clone<br>(for deep clone use `use DeepClone;`)|`use NoClone;`
+`__clone()`|shallow clone (for deep clone use <code>use&nbsp;DeepClone;</code>)|<code>use&nbsp;NoClone;</code>
 `__debugInfo()`|`var_dump()` prints all public properties|
 
 ### `use NoDynamicMethods;`
