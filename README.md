@@ -13,7 +13,7 @@ Method|Default|Disallow
 `__sleep()`, `__wakeup()`|_nothing_, `serialize()`/`unserialize()` allowed|<code>use&nbsp;NoSerialize;</code>
 `__toString()`|`Catchable fatal error: Object of class $class could not be converted to string`|
 `__invoke()`|`Fatal error: Function name must be a string`|
-`__set_state()`|`Fatal error: Call to undefined method $class:__set_state()`|
+`__set_state()`|`Fatal error: Call to undefined method $class::__set_state()`|
 `__clone()`|shallow clone (for deep clone use <code>use&nbsp;DeepClone;</code>)|<code>use&nbsp;NoClone;</code>
 `__debugInfo()`|`var_dump()` prints all public properties|
 
