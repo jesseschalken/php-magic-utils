@@ -45,15 +45,42 @@ The usage of a undeclared property `Foo::$bar` in `blah()` has made it unsafe to
 
 PHP's builtin `serialize()` and `unserialize()` functions make it potentially unsafe to change a class's name or properties, because a serialized version of the class may exist which needs to continue to work when unserialized.
 
-`use NoSerialize;` defines `__sleep()` and `__wakeup()` to throw a `SerializeNotSupported` exception so renaming a class or changing its properties is always safe (provided you update the usages).
+`use NoSerialize;` defines `__sleep()` and `__wakeup()` to throw a `SerializeNotSupported` exception so renaming a class or changing its properties is always safe.
 
 ### `use NoMagic;`
 
-`use NoMagic;` disallows any magic which makes refactoring difficult. It is equivalent to `use NoDynamicMethods, NoDynamicProperties, NoSerialize;`.
+`use NoMagic;` disallows any magic which makes refactoring difficult. It is equivalent to
+
+```php
+use NoDynamicMethods;
+use NoDynamicProperties;
+use NoSerialize;
+```
 
 ### `use NoClone;`
 
-To disallow an object from being cloned, use `use NoClone;`. For example, if an object contains a resource which it is supposed to have unique ownership of, `clone` would violate this by creating another object sharing the same resource. `use NoClone;` is useful is that case.
+To disallow an object from being cloned, use `use NoClone;`.
+
+For example, if an object contains a `resource` which it is supposed to have unique ownership of, `clone` would violate this by creating another object sharing the same resource.
+
+Another example is a class which has a unique ID based on a static counter:
+
+```php
+class A {
+    private $id;
+
+    public function __construct() {
+        static $id = 1;
+        $this->id = $id++;
+    }
+
+    // ...
+}
+```
+
+Cloning an instance of `A` will result in two objects containing the same unique ID.
+
+`use NoClone;` is useful in these cases.
 
 ### `use DeepClone;`
 
@@ -123,7 +150,7 @@ class A {
 
 Now `blah()` will print _100_ again. `use DeepClone;` automates this, so you don't have to remember to correctly implement `__clone()`.
 
-`use DeepClone;` implements `__clone()` by calling `parent::__clone()` if it exists, and cloning all objects contained in all properties of the class in which it's used, including objects in arbitrarily nested arrays. It will error if it finds a `reference` type, since `reference`s are pass-by-reference like objects and therefore should be cloned, but there is no general way to clone a `reference`.
+`use DeepClone;` implements `__clone()` by calling `parent::__clone()` if it exists, and cloning all objects contained in all properties of the class in which it's used, including objects in arbitrarily nested arrays. It will error if it finds a `resource` type, since `resource`s are pass-by-reference like objects and therefore should be cloned, but there is no general way to clone a `resource`.
 
 `use DeepClone;` turns
 
