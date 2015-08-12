@@ -12,7 +12,7 @@ Method|Default|Disallow
 `__toString()`|"Catchable fatal error: Object of class<br> _class_ could not be converted to string"|
 `__invoke()`|"Fatal error: Function name must be a string"|
 `__set_state()`|"Fatal error: Call to undefined method _class_::__set_state()"|
-`__clone()`|shallow clone (for deep clone use `use DeepClone;`)|`use NoClone;`
+`__clone()`|shallow clone<br>(for deep clone use `use DeepClone;`)|`use NoClone;`
 `__debugInfo()`|`var_dump()` prints all public properties|
 
 ### `use NoDynamicMethods;`
