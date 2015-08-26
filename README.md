@@ -81,7 +81,7 @@ function test() {
     $a1->setFoo(100);
     $a2 = clone $a1;
     $a2->setFoo(200);
-    print $a2->getFoo(); // 100
+    print $a1->getFoo(); // 100
 }
 ```
 
@@ -198,7 +198,7 @@ class Foo extends Bar {
 into
 
 ```php
-use \JesseSchalken\DeepClone;
+use \MagicUtils\DeepClone;
 
 class Foo extends Bar {
     /** @var Blah|null */
