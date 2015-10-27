@@ -30,45 +30,45 @@ trait DeepClone {
 
 trait NoDynamicMethods {
     function __call($name, $arguments) {
-        throw undefined_method(__CLASS__, $name);
+        throw new UndefinedMethodException(__CLASS__, $name);
     }
 
     static function __callStatic($name, $arguments) {
-        throw undefined_method(__CLASS__, $name);
+        throw new UndefinedMethodException(__CLASS__, $name);
     }
 }
 
 trait NoDynamicProperties {
     function __get($name) {
-        throw undefined_property(__CLASS__, $name);
+        throw new UndefinedPropertyException(__CLASS__, $name);
     }
 
     function __set($name, $value) {
-        throw undefined_property(__CLASS__, $name);
+        throw new UndefinedPropertyException(__CLASS__, $name);
     }
 
     function __isset($name) {
-        throw undefined_property(__CLASS__, $name);
+        throw new UndefinedPropertyException(__CLASS__, $name);
     }
 
     function __unset($name) {
-        throw undefined_property(__CLASS__, $name);
+        throw new UndefinedPropertyException(__CLASS__, $name);
     }
 }
 
 trait NoSerialize {
     function __sleep() {
-        throw no_serialize(__CLASS__);
+        throw new SerializeNotSupportedException(__CLASS__);
     }
 
     function __wakeup() {
-        throw no_serialize(__CLASS__);
+        throw new SerializeNotSupportedException(__CLASS__);
     }
 }
 
 trait NoClone {
     function __clone() {
-        throw no_clone(__CLASS__);
+        throw new CloneNotSupportedException(__CLASS__);
     }
 }
 
