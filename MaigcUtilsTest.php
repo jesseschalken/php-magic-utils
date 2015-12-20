@@ -134,7 +134,7 @@ class Test extends \PHPUnit_Framework_TestCase {
      * @expectedExceptionMessage Serialization of class JesseSchalken\MagicUtils\Test\NotSerializable is not supported
      */
     function testWakeup() {
-        unserialize('O:34:"JesseSchalken\MagicUtils\Test\NotSerializable":0:{}');
+        unserialize('O:45:"JesseSchalken\MagicUtils\Test\NotSerializable":0:{}');
     }
 
     /**
