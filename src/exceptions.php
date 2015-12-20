@@ -42,4 +42,11 @@ class CloneNotSupportedException extends LogicException {
     }
 }
 
-
+class ConstructNotSupportedException extends LogicException {
+    /**
+     * @param string $class
+     */
+    function __construct($class) {
+        parent::__construct("Construction of $class is not supported");
+    }
+}
