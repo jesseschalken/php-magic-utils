@@ -1,6 +1,6 @@
 <?php
 
-namespace JS\MagicUtils;
+namespace JesseSchalken\MagicUtils;
 
 use LogicException;
 

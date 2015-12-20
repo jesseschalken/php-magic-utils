@@ -3,7 +3,7 @@
 /**
  * Traits should be in a separate file to be autoloaded so the library is usable on PHP 5.3
  */
-namespace JS\MagicUtils;
+namespace JesseSchalken\MagicUtils;
 
 /**
  * Provides a default implementation of __clone() which copies all member properties like C++. This will only clone

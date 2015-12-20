@@ -1,11 +1,11 @@
 <?php
 
-namespace JS\MagicUtils\Test;
+namespace JesseSchalken\MagicUtils\Test;
 
-use JS\MagicUtils\DeepClone;
-use JS\MagicUtils\NoClone;
-use JS\MagicUtils\NoMagic;
-use JS\MagicUtils\NoSerialize;
+use JesseSchalken\MagicUtils\DeepClone;
+use JesseSchalken\MagicUtils\NoClone;
+use JesseSchalken\MagicUtils\NoMagic;
+use JesseSchalken\MagicUtils\NoSerialize;
 
 class A {
     use DeepClone;
@@ -64,8 +64,8 @@ class Test extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException \JS\MagicUtils\UndefinedPropertyException
-     * @expectedExceptionMessage Undefined property: JS\MagicUtils\Test\A::foo
+     * @expectedException \JesseSchalken\MagicUtils\UndefinedPropertyException
+     * @expectedExceptionMessage Undefined property: JesseSchalken\MagicUtils\Test\A::foo
      */
     function testGet() {
         $a = new A;
@@ -74,8 +74,8 @@ class Test extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException \JS\MagicUtils\UndefinedPropertyException
-     * @expectedExceptionMessage Undefined property: JS\MagicUtils\Test\A::foo
+     * @expectedException \JesseSchalken\MagicUtils\UndefinedPropertyException
+     * @expectedExceptionMessage Undefined property: JesseSchalken\MagicUtils\Test\A::foo
      */
     function testSet() {
         $a = new A;
@@ -84,8 +84,8 @@ class Test extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException \JS\MagicUtils\UndefinedPropertyException
-     * @expectedExceptionMessage Undefined property: JS\MagicUtils\Test\A::foo
+     * @expectedException \JesseSchalken\MagicUtils\UndefinedPropertyException
+     * @expectedExceptionMessage Undefined property: JesseSchalken\MagicUtils\Test\A::foo
      */
     function testUnset() {
         $a = new A;
@@ -93,8 +93,8 @@ class Test extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException \JS\MagicUtils\UndefinedPropertyException
-     * @expectedExceptionMessage Undefined property: JS\MagicUtils\Test\A::foo
+     * @expectedException \JesseSchalken\MagicUtils\UndefinedPropertyException
+     * @expectedExceptionMessage Undefined property: JesseSchalken\MagicUtils\Test\A::foo
      */
     function testIsset() {
         $a = new A;
@@ -103,8 +103,8 @@ class Test extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException \JS\MagicUtils\UndefinedMethodException
-     * @expectedExceptionMessage Call to undefined method JS\MagicUtils\Test\A::foo()
+     * @expectedException \JesseSchalken\MagicUtils\UndefinedMethodException
+     * @expectedExceptionMessage Call to undefined method JesseSchalken\MagicUtils\Test\A::foo()
      */
     function testCall() {
         $a = new A;
@@ -113,8 +113,8 @@ class Test extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException \JS\MagicUtils\UndefinedMethodException
-     * @expectedExceptionMessage Call to undefined method JS\MagicUtils\Test\A::foo()
+     * @expectedException \JesseSchalken\MagicUtils\UndefinedMethodException
+     * @expectedExceptionMessage Call to undefined method JesseSchalken\MagicUtils\Test\A::foo()
      */
     function testCallStatic() {
         /** @noinspection PhpUndefinedMethodInspection */
@@ -122,24 +122,24 @@ class Test extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException \JS\MagicUtils\SerializeNotSupportedException
-     * @expectedExceptionMessage Serialization of class JS\MagicUtils\Test\NotSerializable is not supported
+     * @expectedException \JesseSchalken\MagicUtils\SerializeNotSupportedException
+     * @expectedExceptionMessage Serialization of class JesseSchalken\MagicUtils\Test\NotSerializable is not supported
      */
     function testSleep() {
         serialize(new NotSerializable);
     }
 
     /**
-     * @expectedException \JS\MagicUtils\SerializeNotSupportedException
-     * @expectedExceptionMessage Serialization of class JS\MagicUtils\Test\NotSerializable is not supported
+     * @expectedException \JesseSchalken\MagicUtils\SerializeNotSupportedException
+     * @expectedExceptionMessage Serialization of class JesseSchalken\MagicUtils\Test\NotSerializable is not supported
      */
     function testWakeup() {
-        unserialize('O:34:"JS\MagicUtils\Test\NotSerializable":0:{}');
+        unserialize('O:34:"JesseSchalken\MagicUtils\Test\NotSerializable":0:{}');
     }
 
     /**
-     * @expectedException \JS\MagicUtils\CloneNotSupportedException
-     * @expectedExceptionMessage Clone of class JS\MagicUtils\Test\NotCloneable is not supported
+     * @expectedException \JesseSchalken\MagicUtils\CloneNotSupportedException
+     * @expectedExceptionMessage Clone of class JesseSchalken\MagicUtils\Test\NotCloneable is not supported
      */
     function testNoClone() {
         /** @noinspection PhpExpressionResultUnusedInspection */
@@ -151,7 +151,7 @@ class Test extends \PHPUnit_Framework_TestCase {
      * @expectedExceptionMessage Resources cannot be cloned
      */
     function testCloneResource() {
-        \JS\MagicUtils\clone_val(fopen('php://memory', 'rb'));
+        \JesseSchalken\MagicUtils\clone_val(fopen('php://memory', 'rb'));
     }
 
     function testCloneParent() {
