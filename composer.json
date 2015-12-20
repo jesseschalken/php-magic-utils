@@ -2,7 +2,7 @@
   "name": "jesseschalken/magic-utils",
   "description": "Traits and functions to help with implementing PHP's magic methods",
   "minimum-stability": "stable",
-  "license": "LGPL2.1",
+  "license": "MIT",
   "authors": [
     {
       "name": "Jesse Schalken",
@@ -10,10 +10,14 @@
     }
   ],
   "require-dev": {
-    "phpunit/phpunit": "^4.7.7",
-    "jesseschalken/autoload-generator": "dev-master"
+    "phpunit/phpunit": "^4.7.7"
   },
   "autoload": {
-    "files": ["src/include.php"]
+    "files": [
+      "MagicUtils.php"
+    ],
+    "classmap": [
+      "."
+    ]
   }
 }

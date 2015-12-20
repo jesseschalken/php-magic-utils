@@ -1,19 +1,15 @@
 <?php
 
 /**
- * Traits should be in a distinct file to be autoloaded so the library is usable
- * on PHP 5.3
+ * Traits should be in a separate file to be autoloaded so the library is usable on PHP 5.3
  */
-
-namespace MagicUtils;
+namespace JS\MagicUtils;
 
 /**
- * Provides a default implementation of __clone() which copies all member
- * properties like C++. This will only clone properties belonging to the class
- * in which it's used, meaning you must use the trait in each class that you
- * want it, even if the parent class is already using the trait. This is to
- * avoid "action at a distance" so the `use DeepClone;` line sits close to the
- * properties on which it acts. If present, the __clone() method of the parent
+ * Provides a default implementation of __clone() which copies all member properties like C++. This will only clone
+ * properties belonging to the class in which it's used, meaning you must use the trait in each class that you want
+ * it, even if the parent class is already using the trait. This is to avoid "action at a distance" so the `use
+ * DeepClone;` line sits close to the properties on which it acts. If present, the __clone() method of the parent
  * class will be called.
  */
 trait DeepClone {
@@ -29,11 +25,11 @@ trait DeepClone {
 }
 
 trait NoDynamicMethods {
-    function __call($name, $arguments) {
+    static function __callStatic($name, $arguments) {
         throw new UndefinedMethodException(__CLASS__, $name);
     }
 
-    static function __callStatic($name, $arguments) {
+    function __call($name, $arguments) {
         throw new UndefinedMethodException(__CLASS__, $name);
     }
 }
@@ -77,4 +73,3 @@ trait NoMagic {
     use NoDynamicProperties;
     use NoSerialize;
 }
-
