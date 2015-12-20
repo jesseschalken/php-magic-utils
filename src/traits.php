@@ -72,9 +72,14 @@ trait NoClone {
     }
 }
 
+trait NoConstrcut {
+    function __construct() {
+        throw new ConstructNotSupportedException(__CLASS__);
+    }
+}
+
 trait NoMagic {
     use NoDynamicMethods;
     use NoDynamicProperties;
     use NoSerialize;
 }
-
