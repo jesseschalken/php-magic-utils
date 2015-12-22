@@ -1,6 +1,6 @@
 # php-magic-utils
 
-**php-magic-utils** provides traits and functions to help with the implementation of [PHP's magic methods](http://php.net/manual/en/language.oop5.magic.php), especially `__clone`.
+**php-magic-utils** provides traits and functions to help with the implementation of [PHP's magic methods](http://php.net/manual/en/language.oop5.magic.php), especially `__clone()`.
 
 Method|Default|Disallow
 ------|-------|--------
@@ -17,60 +17,7 @@ Method|Default|Disallow
 
 ### `use DeepClone;`
 
-When an object is cloned with `clone ...`, PHP by default does a _shallow_ clone, meaning a new object is created with the same value for all properties, but sharing the same instance of any objects contained in those properties. This can expose the user of the class to be affected by what information is stored directly and what information is stored indirectly through other objects, breaking abstraction and causing subtle bugs.
-
-For example:
-
-```php
-class A {
-    private $foo = 9;
-    public function getFoo() { return $this->foo; }
-    public function setFoo($foo) { $this->foo = $foo; }
-}
-```
-```php
-function test() {
-    $a1 = new A;
-    $a1->setFoo(100);
-    $a2 = clone $a1;
-    $a2->setFoo(200);
-    print $a1->getFoo(); // 100
-}
-```
-
-If a refactoring is made to move the value of the `$foo` property into another object (`B`):
-
-```php
-class A {
-    private $b;
-    public function __construct() {
-        $this->b = new B;
-    }
-    public function getFoo() { return $this->b->foo; }
-    public function setFoo($foo) { $this->b->foo = $foo; }
-}
-
-class B {
-    public $foo = 9;
-}
-```
-
-The `test()` function will now print _200_ instead of _100_, because both `$a1` and `$a2` will share the same instance of `B`.
-
-This can be resolved by implementing `__clone()` by doing a deep clone:
-
-```php
-class A {
-    private $b;
-    // ...
-    public function __clone() {
-        $this->b = clone $this->b;
-    }
-    // ...
-}
-```
-
-`use DeepClone;` will do this for you. It turns
+`DeepClone` turns
 
 ```php
 class Foo extends Bar {
@@ -108,7 +55,64 @@ class Foo extends Bar {
 
 It implements `__clone()` by calling `parent::__clone()` if it exists, and cloning all objects contained in all properties of the class in which it's used, including objects in arbitrarily nested arrays. It will error if it finds a `resource` type, since `resource`s are pass-by-reference like objects and therefore should be cloned, but there is no general way to clone a `resource`.
 
-Note that you have to use `use DeepClone;` at each level in a class hierarhcy. It will not clone properties of parent or derived classes.
+Note that you have to use `use DeepClone;` at each level in a class hierarchy. It will not clone properties of parent or derived classes.
+
+#### Why do a deep clone?
+
+When an object is cloned with `clone ...`, PHP by default does a _shallow_ clone, meaning a new object is created with the same value for all properties, but sharing the same instance of any objects contained in those properties. This can expose the user of the class to be affected by what information is stored directly and what information is stored indirectly through other objects, breaking abstraction and causing subtle bugs.
+
+Here is an example:
+
+```php
+class A {
+    private $foo = 9;
+    public function getFoo() { return $this->foo; }
+    public function setFoo($foo) { $this->foo = $foo; }
+}
+```
+```php
+function test() {
+    $a1 = new A;
+    $a1->setFoo(100);
+    $a2 = clone $a1;
+    $a2->setFoo(200);
+    print $a1->getFoo(); // 100
+}
+```
+
+If an innocent refactoring is made to move the value of the `$foo` property into another object (`B`):
+
+```php
+class A {
+    private $b;
+    public function __construct() {
+        $this->b = new B;
+    }
+    public function getFoo() { return $this->b->foo; }
+    public function setFoo($foo) { $this->b->foo = $foo; }
+}
+
+class B {
+    public $foo = 9;
+}
+```
+
+The `test()` function will now print _200_ instead of _100_, because both `$a1` and `$a2` will share the same instance of `B`.
+
+This can be resolved by implementing `__clone()` by doing a deep clone:
+
+```php
+class A {
+    private $b;
+    // ...
+    public function __clone() {
+        $this->b = clone $this->b;
+    }
+    // ...
+}
+```
+
+The developer making the refactoring has to rememeber to keep the `__clone()` method up to date to maintain behaviour in case the object is cloned. `use DeepClone;` does this for you, so you don't have to remember.
 
 ### `use NoClone;`
 
