@@ -14,13 +14,18 @@ namespace JesseSchalken\MagicUtils;
  */
 trait DeepClone {
     function __clone() {
-        $parent = get_parent_class(__CLASS__);
-        if ($parent && method_exists($parent, '__clone')) {
-            $method = new \ReflectionMethod($parent, '__clone');
-            $method->invoke($this);
+        $class  = new \ReflectionClass(__CLASS__);
+        $parent = $class->getParentClass();
+
+        if ($parent && $parent->hasMethod('__clone')) {
+            $parent->getMethod('__clone')->invoke($this);
         }
 
-        clone_props($this, __CLASS__);
+        foreach ($class->getProperties() as $prop) {
+            if (!$prop->isStatic() && $prop->class === __CLASS__) {
+                clone_ref($this->{$prop->name});
+            }
+        }
     }
 }
 

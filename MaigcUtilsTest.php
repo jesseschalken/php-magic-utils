@@ -4,6 +4,7 @@ namespace JesseSchalken\MagicUtils\Test;
 
 use JesseSchalken\MagicUtils\DeepClone;
 use JesseSchalken\MagicUtils\NoClone;
+use JesseSchalken\MagicUtils\NoConstruct;
 use JesseSchalken\MagicUtils\NoMagic;
 use JesseSchalken\MagicUtils\NoSerialize;
 
@@ -41,6 +42,10 @@ class NotSerializable {
     use NoSerialize;
 }
 
+class Nope {
+    use NoConstruct;
+}
+
 class Test extends \PHPUnit_Framework_TestCase {
     function testDeepClone() {
         $a1 = new A2;
@@ -48,18 +53,6 @@ class Test extends \PHPUnit_Framework_TestCase {
         self::assertNotEquals(
             spl_object_hash($a1->getB()),
             spl_object_hash($a2->getB())
-        );
-    }
-
-    function testDynamic() {
-        $a1 = new B;
-        /** @noinspection PhpUndefinedFieldInspection */
-        $a1->foo = new \stdClass;
-        $a2      = clone $a1;
-        /** @noinspection PhpUndefinedFieldInspection */
-        self::assertNotEquals(
-            spl_object_hash($a1->foo),
-            spl_object_hash($a2->foo)
         );
     }
 
@@ -156,7 +149,20 @@ class Test extends \PHPUnit_Framework_TestCase {
 
     function testCloneParent() {
         /** @noinspection PhpExpressionResultUnusedInspection */
-        clone new A3;
+        $a1 = new A3;
+        $a2 = clone $a1;
+        $this->assertNotEquals(
+            spl_object_hash($a1->getB()),
+            spl_object_hash($a2->getB())
+        );
+    }
+
+    /**
+     * @expectedException \JesseSchalken\MagicUtils\ConstructNotSupportedException
+     * @expectedExceptionMessage Construction of JesseSchalken\MagicUtils\Test\Nope is not supported
+     */
+    function testNoConstruct() {
+        new Nope();
     }
 }
 

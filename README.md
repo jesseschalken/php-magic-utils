@@ -161,33 +161,28 @@ use NoDynamicProperties;
 use NoSerialize;
 ```
 
-### `clone_ref()`, `clone_val()`, `clone_props()`
+### `clone_ref(mixed &$x):void`
 
-- `clone_ref(mixed &$var):void`
+Will clone all objects contained in the specified variable, including those inside nested arrays. It is useful for implementing `__clone()` by deep cloning only some properties.
 
-  Will clone all objects contained in the specified variable, including those inside nested arrays. It is useful for implementing `__clone()` by deep cloning only some properties.
+For example:
 
-  For example:
+```php
+class A {
+    private $prop1;
+    private $prop2;
+    function __construct() {
+        $this->prop1 = new Foo1;
+        $this->prop2 = new Foo2;
+    }
+    function __clone() {
+        clone_ref($this->prop2);
+        // cloned instances will share the same object stored in $this->prop1
+    }
+}
+```
 
-  ```php
-  class A {
-      private $prop1;
-      private $prop2;
-      function __construct() {
-          $this->prop1 = new Foo1;
-          $this->prop2 = new Foo2;
-      }
-      function __clone() {
-          clone_ref($this->prop2);
-          // cloned instances will share the same object stored in $this->prop1
-      }
-  }
-  ```
+### `clone_val(mixed $x):mixed`
 
-- `clone_val(mixed $val):mixed`
+Will clone all objects contained in the specified value, and return the new value.
 
-  Will clone all objects contained in the specified value, and return the new value.
-
-- `clone_props(object $object [, string $class]):void`
-
-   Clones all the objects contained in the properties of the specified object. If `$class` is specified, it will only clone properties defined in that class, and not properties defined in other classes in the hierarchy. 
