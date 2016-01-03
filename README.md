@@ -114,6 +114,31 @@ class A {
 
 The developer making the refactoring has to rememeber to keep the `__clone()` method up to date to maintain behaviour in case the object is cloned. `use DeepClone;` does this for you, so you don't have to remember.
 
+### `clone_ref(mixed &$x):void`
+
+Will clone all objects contained in the specified variable, including those inside nested arrays. It is useful for implementing `__clone()` by deep cloning only some properties.
+
+For example:
+
+```php
+class A {
+    private $prop1;
+    private $prop2;
+    function __construct() {
+        $this->prop1 = new Foo1;
+        $this->prop2 = new Foo2;
+    }
+    function __clone() {
+        clone_ref($this->prop2);
+        // cloned instances will share the same object stored in $this->prop1
+    }
+}
+```
+
+### `clone_val(mixed $x):mixed`
+
+Will clone all objects contained in the specified value, and return the new value.
+
 ### `use NoClone;`
 
 `use NoClone;` prevents an object from being cloned. It implements `__clone()` by throwing a `CloneNotSupportedException`.
@@ -160,29 +185,3 @@ use NoDynamicMethods;
 use NoDynamicProperties;
 use NoSerialize;
 ```
-
-### `clone_ref(mixed &$x):void`
-
-Will clone all objects contained in the specified variable, including those inside nested arrays. It is useful for implementing `__clone()` by deep cloning only some properties.
-
-For example:
-
-```php
-class A {
-    private $prop1;
-    private $prop2;
-    function __construct() {
-        $this->prop1 = new Foo1;
-        $this->prop2 = new Foo2;
-    }
-    function __clone() {
-        clone_ref($this->prop2);
-        // cloned instances will share the same object stored in $this->prop1
-    }
-}
-```
-
-### `clone_val(mixed $x):mixed`
-
-Will clone all objects contained in the specified value, and return the new value.
-
